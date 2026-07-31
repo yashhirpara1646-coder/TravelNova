@@ -29,7 +29,7 @@ def register():
 
     return jsonify({
         'success': True,
-        'message': 'User registered successfully in TravelNova JSON database!',
+        'message': 'User registered successfully in TravelNova!',
         'user': {'id': new_user['id'], 'name': new_user['name'], 'email': new_user['email']}
     }), 201
 
