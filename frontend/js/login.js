@@ -177,7 +177,26 @@ async function handleAuth(e) {
       showAlert(`🎉 ${data.message}`, "success");
       setTimeout(() => { window.location.href = 'index.html'; }, 1200);
     } else {
-      showAlert(`⚠️ ${data.message || 'Authentication failed.'}`, "error");
+      // Local storage fallback for login if server backend restarted or wiped
+      let usersDb = JSON.parse(localStorage.getItem('travelnova_users_db')) || [];
+      const found = usersDb.find(u => u.email && u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+      
+      if (mode === 'login' && found) {
+        sessionStorage.setItem('travelnova_user', JSON.stringify(found));
+        localStorage.setItem('travelnova_user', JSON.stringify(found));
+
+        // Re-sync registered user to server backend in background
+        fetch(getApiUrl('/api/register'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: found.name || 'Traveler', email: found.email, password: found.password })
+        }).catch(e => {});
+
+        showAlert(`🎉 Welcome back, ${found.name}!`, "success");
+        setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+      } else {
+        showAlert(`⚠️ ${data.message || 'Authentication failed.'}`, "error");
+      }
     }
   } catch (err) {
     // Fallback local storage

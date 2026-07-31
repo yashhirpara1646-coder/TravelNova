@@ -4,8 +4,10 @@ import threading
 from datetime import datetime
 from backend.config import USERS_FILE, TRIPS_FILE, BOOKINGS_FILE
 
+from backend.sqlite_db import sqlite_db
+
 class JSONDatabaseManager:
-    """Thread-safe JSON file database manager for TravelNova."""
+    """Thread-safe JSON file database manager for TravelNova with SQLite secondary backup."""
     
     def __init__(self):
         self.lock = threading.Lock()
@@ -41,6 +43,15 @@ class JSONDatabaseManager:
         for user in users:
             if user.get('email', '').strip().lower() == email_clean:
                 return user
+
+        # Secondary SQLite DB lookup fallback
+        sq_user = sqlite_db.find_user_by_email(email_clean)
+        if sq_user:
+            with self.lock:
+                users.append(sq_user)
+                self._write_file(USERS_FILE, users)
+            return sq_user
+
         return None
 
     def add_user(self, name, email, password):
@@ -58,6 +69,9 @@ class JSONDatabaseManager:
             }
             users.append(new_user)
             self._write_file(USERS_FILE, users)
+            
+            # Secondary SQLite DB backup
+            sqlite_db.add_user(name=name, email=email, password=password)
             return new_user
 
     # --- TRIP OPERATIONS ---
@@ -91,6 +105,9 @@ class JSONDatabaseManager:
             }
             trips.append(new_trip)
             self._write_file(TRIPS_FILE, trips)
+            
+            # Secondary SQLite DB backup
+            sqlite_db.add_trip(user_email=user_email, destination=destination, days=days, budget=budget, interests=interests)
             return new_trip
 
     # --- BOOKING OPERATIONS ---
@@ -126,6 +143,13 @@ class JSONDatabaseManager:
             }
             bookings.append(new_booking)
             self._write_file(BOOKINGS_FILE, bookings)
+            
+            # Secondary SQLite DB backup
+            sqlite_db.add_booking(
+                booking_ref=booking_ref, user_name=user_name, user_email=user_email,
+                user_phone=user_phone, destination=destination, days=days,
+                total_amount=total_amount, payment_method=payment_method
+            )
             return new_booking
 
     # --- ADMIN DUMP & RESET ---
