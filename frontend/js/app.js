@@ -516,6 +516,53 @@ async function fetchData(city, days = 3) {
   };
 }
 
+async function verifyRealWorldCity(city) {
+  if (!city || typeof city !== 'string') return false;
+  const clean = city.trim().toLowerCase();
+  if (clean.length < 2 || /^\d+$/.test(clean) || !/^[a-zA-Z\s\-\.\',]+$/.test(clean)) {
+    return false;
+  }
+
+  // 1. Instant match in known local database & coordinate cache
+  if (DB[clean] || GC[clean]) return true;
+
+  // 2. Online Geocoding Check via Nominatim OpenStreetMap
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=3&q=${encodeURIComponent(clean)}`);
+    const data = await res.json();
+    if (data && data.length > 0) {
+      for (const item of data) {
+        const type = (item.type || '').toLowerCase();
+        const classType = (item.class || '').toLowerCase();
+        const addressType = (item.addresstype || '').toLowerCase();
+        const displayName = (item.display_name || '').toLowerCase();
+
+        if (
+          ['city', 'town', 'village', 'administrative', 'country', 'state', 'island', 'municipality', 'locality', 'suburb'].includes(type) ||
+          ['city', 'town', 'village', 'administrative', 'country', 'state'].includes(addressType) ||
+          ['place', 'boundary', 'amenity', 'tourism'].includes(classType) ||
+          displayName.includes(clean)
+        ) {
+          return true;
+        }
+      }
+    }
+  } catch (e) {}
+
+  // 3. Check via OpenWeather Live City API
+  try {
+    const wRes = await fetch(getApiUrl(`/api/weather?city=${encodeURIComponent(clean)}`));
+    if (wRes.ok) {
+      const wData = await wRes.json();
+      if (wData && wData.success && wData.data && wData.data.temp !== undefined) {
+        return true;
+      }
+    }
+  } catch (e) {}
+
+  return false;
+}
+
 async function handleSubmit(e) {
   if (e && e.preventDefault) e.preventDefault();
   const destInput = document.getElementById('fDest');
@@ -525,12 +572,27 @@ async function handleSubmit(e) {
   if (!valD(city)) {
     if (errMsg) errMsg.innerText = 'Please enter a valid city name.';
     if (errEl) errEl.classList.remove('hidden');
+    alert(`⚠️ Invalid Destination City!\n\nPlease enter a valid destination city name (e.g. Ahmedabad, Mumbai, Paris, Tokyo, Goa).`);
     showToast('Enter valid city!', 'error');
     return;
   }
-  if (errEl) errEl.classList.add('hidden');
+  
   const btn = document.getElementById('subBtn');
-  if (btn) { btn.disabled = true; btn.innerHTML = `⏳ Generating Plan for ${city}...`; }
+  if (btn) { btn.disabled = true; btn.innerHTML = `🔍 Verifying "${city}"...`; }
+
+  // Verify if city actually exists in the real world
+  const isRealCity = await verifyRealWorldCity(city);
+  if (!isRealCity) {
+    if (errMsg) errMsg.innerText = `⚠️ "${city}" is not a valid real-world destination city. Please enter a real city name!`;
+    if (errEl) errEl.classList.remove('hidden');
+    alert(`⚠️ Invalid Destination City!\n\n"${city}" does not exist in the real world. Please enter a valid real-world city name (e.g. Ahmedabad, Mumbai, Paris, Tokyo, Goa).`);
+    showToast(`⚠️ "${city}" does not exist in the real world!`, 'error');
+    if (btn) { btn.disabled = false; btn.innerHTML = '✨ Generate Travel Itinerary'; }
+    return;
+  }
+
+  if (errEl) errEl.classList.add('hidden');
+  if (btn) { btn.innerHTML = `⏳ Generating Plan for ${city}...`; }
   showToast(`Creating custom travel plan for ${city}...`);
   const days = parseInt(document.getElementById('fDB').innerText) || 3;
   const budget = parseInt(document.getElementById('fBud').value) || 10000;

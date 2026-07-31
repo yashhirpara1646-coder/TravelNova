@@ -12,16 +12,35 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="antialiased min-h-screen flex flex-col" onclick="closeDD()">
-<header><div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-<div class="flex items-center gap-3"><button id="navBack" onclick="goBack()" class="hidden btn-secondary">⬅ Back</button>
-<div class="flex items-center gap-2.5 cursor-pointer" onclick="showS('home')"><div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-emerald-500 flex items-center justify-center text-white font-black text-xl shadow-md">✈</div><div><span class="text-xl font-black font-heading bg-gradient-to-r from-blue-700 via-blue-600 to-emerald-600 bg-clip-text text-transparent">TravelNova</span><span class="ml-2 text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-200">Smart System</span></div></div></div>
-<div class="flex items-center gap-2 sm:gap-3">
-<div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full text-xs font-bold border"><select id="curSel" onchange="cc=this.value;if(CI)renderIt(CI)" class="bg-transparent font-black outline-none cursor-pointer"><option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option></select></div>
-<button onclick="document.documentElement.classList.toggle('dark')" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 border text-xs font-bold">🌙/☀️</button>
-<button id="authNavBtn" onclick="openAuthModal()" class="btn-primary">🔐 Sign In</button>
-<button onclick="showS('planner')" class="btn-blue">✨ Plan Trip</button>
-<button onclick="showS('dashboard')" class="hidden sm:inline-block btn-secondary">Dashboard</button>
-</div></div></header>
+<header class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800">
+  <div class="max-w-7xl mx-auto px-3 sm:px-4 h-16 flex items-center justify-between gap-2">
+    <div class="flex items-center gap-2">
+      <button id="navBack" onclick="goBack()" class="hidden px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold border">⬅</button>
+      <div class="flex items-center gap-2 cursor-pointer" onclick="showS('home')">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-emerald-500 flex items-center justify-center text-white font-black text-lg sm:text-xl shadow-md">✈</div>
+        <div class="flex flex-col sm:flex-row sm:items-center">
+          <span class="text-lg sm:text-xl font-black font-heading bg-gradient-to-r from-blue-700 via-blue-600 to-emerald-600 bg-clip-text text-transparent">TravelNova</span>
+          <span class="hidden md:inline-block ml-2 text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300">Smart System</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-1.5 sm:gap-2.5">
+      <div class="flex items-center bg-slate-100 dark:bg-slate-800 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-bold border">
+        <select id="curSel" onchange="cc=this.value;if(CI)renderIt(CI)" class="bg-transparent font-black outline-none cursor-pointer text-xs">
+          <option value="₹">₹ INR</option>
+          <option value="$">$ USD</option>
+          <option value="€">€ EUR</option>
+          <option value="£">£ GBP</option>
+        </select>
+      </div>
+      <button onclick="document.documentElement.classList.toggle('dark')" class="p-1.5 sm:p-2 rounded-full bg-slate-100 dark:bg-slate-800 border text-xs font-bold">🌙/☀️</button>
+      <button id="authNavBtn" onclick="openAuthModal()" class="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-emerald-600 text-white font-black text-xs shadow hover:bg-emerald-700 transition max-w-[100px] sm:max-w-[150px] truncate">🔐 Sign In</button>
+      <button onclick="showS('planner')" class="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-blue-600 text-white font-black text-xs shadow hover:bg-blue-700 transition">✨ Plan</button>
+      <button onclick="showS('dashboard')" class="hidden md:inline-block px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold border">Dashboard</button>
+    </div>
+  </div>
+</header>
 <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl shadow-xl text-xs font-bold border"></div>
 <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
 
