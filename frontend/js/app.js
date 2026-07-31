@@ -267,7 +267,7 @@ function pd(c) {
   showS('planner');
 }
 
-function startQS() {
+async function startQS() {
   const qInput = document.getElementById('qIn');
   if (!qInput) return;
   const q = qInput.value.trim();
@@ -275,9 +275,30 @@ function startQS() {
     showToast('Please enter a city name!', 'error');
     return;
   }
+  
+  const btn = document.querySelector('button[onclick="startQS()"]');
+  const oldText = btn ? btn.innerText : 'Search & Plan';
+  if (btn) { btn.innerText = 'Verifying...'; btn.disabled = true; }
+
+  const isReal = await verifyRealWorldCity(q);
+  
+  if (btn) { btn.innerText = oldText; btn.disabled = false; }
+
+  if (!isReal) {
+    alert(`⚠️ Invalid Destination City!\n\n"${q}" does not exist in the real world. Please enter a valid real-world city name (e.g. Ahmedabad, Mumbai, Paris).`);
+    showToast(`⚠️ "${q}" does not exist in the real world!`, 'error');
+    return;
+  }
+
   const destInput = document.getElementById('fDest');
   if (destInput) destInput.value = fc(q);
   showS('planner');
+  
+  // Auto-fetch data if real world city
+  setTimeout(() => {
+    const subBtn = document.getElementById('subBtn');
+    if (subBtn) subBtn.click();
+  }, 300);
 }
 
 const CURRENCY_MAP = {
@@ -537,11 +558,16 @@ async function verifyRealWorldCity(city) {
         const addressType = (item.addresstype || '').toLowerCase();
         const displayName = (item.display_name || '').toLowerCase();
 
+        const nameTokens = displayName.split(/[\s,-]+/).map(t => t.trim());
+        const hasName = nameTokens.includes(clean) || displayName.startsWith(clean + ',') || displayName === clean;
+
         if (
-          ['city', 'town', 'village', 'administrative', 'country', 'state', 'island', 'municipality', 'locality', 'suburb'].includes(type) ||
-          ['city', 'town', 'village', 'administrative', 'country', 'state'].includes(addressType) ||
-          ['place', 'boundary', 'amenity', 'tourism'].includes(classType) ||
-          displayName.includes(clean)
+          hasName && 
+          (
+            ['city', 'town', 'village', 'administrative', 'country', 'state', 'island', 'municipality', 'locality', 'suburb'].includes(type) ||
+            ['city', 'town', 'village', 'administrative', 'country', 'state'].includes(addressType) ||
+            ['place', 'boundary', 'tourism'].includes(classType)
+          )
         ) {
           return true;
         }
