@@ -36,9 +36,14 @@ def after_request(response):
     response.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE,OPTIONS'
     return response
 
-# Root & Health Endpoints
+# Root & Frontend Route
 @app.route('/')
 def home():
+    frontend_dir = os.path.join(PROJECT_ROOT, 'frontend')
+    return send_from_directory(frontend_dir, 'index.html')
+
+@app.route('/api')
+def api_info():
     return jsonify({
         'name': 'TravelNova AI Backend API (Gemini 2.5 Flash)',
         'status': 'Online',
@@ -47,20 +52,8 @@ def home():
             'ai_engine': 'Gemini 2.5 Flash (gemini-2.5-flash)',
             'weather_api': 'OpenWeather API',
             'maps_api': 'Google Maps JS API',
-            'directions_api': 'Google Directions API (Distance, Travel Time, Driving & Walking Routes)',
-            'places_api': 'Google Places API (Vegetarian, Vegan, Jain Food Recommendations)'
-        },
-        'endpoints': {
-            '/api/health': 'GET - Health status',
-            '/api/register': 'POST - Register user',
-            '/api/login': 'POST - User login',
-            '/api/ai/generate-plan': 'POST - Gemini 2.5 Flash Itinerary, Budget, Packing, Tips, Food',
-            '/api/weather': 'GET - OpenWeather live data',
-            '/api/transport/directions': 'POST - Google Directions (Distance, Duration, Routes)',
-            '/api/food/places': 'POST - Google Places (Veg, Vegan, Jain food spots)',
-            '/api/save-trip': 'POST - Save generated trip',
-            '/api/book-trip': 'POST - Save trip booking',
-            '/api/admin/all-data': 'GET - Admin JSON database dump'
+            'directions_api': 'Google Directions API',
+            'places_api': 'Google Places API'
         }
     })
 
