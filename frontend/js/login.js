@@ -165,6 +165,15 @@ async function handleAuth(e) {
     if (res.ok && data.success) {
       const user = data.user || { name: name || email.split('@')[0], email };
       sessionStorage.setItem('travelnova_user', JSON.stringify(user));
+      localStorage.setItem('travelnova_user', JSON.stringify(user));
+
+      // Save user to local storage users DB
+      let usersDb = JSON.parse(localStorage.getItem('travelnova_users_db')) || [];
+      if (user.email && !usersDb.some(u => u.email && u.email.toLowerCase() === user.email.toLowerCase())) {
+        usersDb.push(user);
+        localStorage.setItem('travelnova_users_db', JSON.stringify(usersDb));
+      }
+
       showAlert(`🎉 ${data.message}`, "success");
       setTimeout(() => { window.location.href = 'index.html'; }, 1200);
     } else {
