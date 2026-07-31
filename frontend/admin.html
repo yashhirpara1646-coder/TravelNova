@@ -7,12 +7,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','sans-serif'],heading:['Outfit','sans-serif']}}}}</script>
-  <style>
-    body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc}
-    .glass{background:rgba(30,41,59,0.7);backdrop-filter:blur(16px)}
-  </style>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="antialiased min-h-screen p-6 sm:p-10 space-y-8">
+<body class="antialiased min-h-screen p-6 sm:p-10 space-y-8 bg-slate-900 text-white">
 
   <!-- Header -->
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
@@ -20,12 +17,13 @@
       <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-emerald-500 flex items-center justify-center text-white font-black text-2xl shadow-xl">🛡️</div>
       <div>
         <h1 class="text-3xl font-black font-heading bg-gradient-to-r from-blue-400 via-blue-200 to-emerald-400 bg-clip-text text-transparent">TravelNova Admin Database</h1>
-        <p class="text-xs text-slate-400">Standalone Central Database Viewer & User Management System (`travelnova.db`)</p>
+        <p class="text-xs text-slate-400">Standalone Central Database Viewer & User Management System (JSON Database)</p>
       </div>
     </div>
     <div class="flex items-center gap-3">
+      <a href="index.html" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs shadow transition border border-slate-700">🏠 Main App</a>
       <span class="px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> DB Connected</span>
-      <button onclick="loadAdminData()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow transition">🔄 Refresh Data</button>
+      <button onclick="loadAdminData()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow transition cursor-pointer">🔄 Refresh Data</button>
     </div>
   </div>
 
@@ -34,7 +32,7 @@
     <div class="glass p-6 rounded-3xl border border-slate-800 space-y-2">
       <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase"><span>Total Users</span><span class="text-xl">👥</span></div>
       <p id="statUsers" class="text-3xl font-black font-heading text-blue-400">0</p>
-      <p class="text-[11px] text-slate-500">Registered in SQLite Database</p>
+      <p class="text-[11px] text-slate-500">Registered in JSON Database</p>
     </div>
     <div class="glass p-6 rounded-3xl border border-slate-800 space-y-2">
       <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase"><span>Total Bookings</span><span class="text-xl">🎟️</span></div>
@@ -82,10 +80,11 @@
               <th class="p-3 text-right">Amount</th>
               <th class="p-3">Payment</th>
               <th class="p-3">Booked Date</th>
+              <th class="p-3 text-center">Action</th>
             </tr>
           </thead>
           <tbody id="tblBookings" class="divide-y divide-slate-800 text-slate-300 font-semibold">
-            <tr><td colspan="9" class="p-6 text-center text-slate-500">Loading bookings...</td></tr>
+            <tr><td colspan="10" class="p-6 text-center text-slate-500">Loading bookings...</td></tr>
           </tbody>
         </table>
       </div>
@@ -111,173 +110,51 @@
               <th class="p-3">Full Name</th>
               <th class="p-3">Email Address</th>
               <th class="p-3">Created At</th>
+              <th class="p-3 text-center">Action</th>
             </tr>
           </thead>
           <tbody id="tblUsers" class="divide-y divide-slate-800 text-slate-300 font-semibold">
-            <tr><td colspan="4" class="p-6 text-center text-slate-500">Loading users...</td></tr>
+            <tr><td colspan="5" class="p-6 text-center text-slate-500">Loading users...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
-
+    <!-- 3. Trips Table -->
+    <div class="glass rounded-3xl border border-slate-800 overflow-hidden space-y-4 p-6">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+        <div>
+          <h2 class="text-xl font-black font-heading text-amber-400">🗺️ Saved Trip Plans (`trips` Table)</h2>
+          <p class="text-xs text-slate-400">User travel plans with selected travel interests & budget preferences</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="resetDbTable('trips')" class="px-2.5 py-1 text-[11px] font-black rounded-lg bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white transition cursor-pointer border border-rose-500/20">🗑️ Reset Table</button>
+          <span id="countTrips" class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold">0 records</span>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs text-left">
+          <thead class="bg-slate-800/80 text-slate-400 uppercase font-extrabold text-[10px]">
+            <tr>
+              <th class="p-3">ID</th>
+              <th class="p-3">User Email</th>
+              <th class="p-3">Destination</th>
+              <th class="p-3">Days</th>
+              <th class="p-3 text-right">Budget</th>
+              <th class="p-3">🎯 Travel Interests & Focus</th>
+              <th class="p-3">Created At</th>
+              <th class="p-3 text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="tblTrips" class="divide-y divide-slate-800 text-slate-300 font-semibold">
+            <tr><td colspan="8" class="p-6 text-center text-slate-500">Loading trips...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
   </div>
 
-  <script>
-    let rawAdminData = { users: [], trips: [], bookings: [] };
-
-    async function syncOfflineData(){
-      try {
-        const localUsers = JSON.parse(localStorage.getItem('travelnova_users_db')) || [];
-        const activeUser = JSON.parse(sessionStorage.getItem('travelnova_user'));
-        if(activeUser && activeUser.email && !localUsers.some(u => u.email.toLowerCase() === activeUser.email.toLowerCase())){
-          localUsers.push(activeUser);
-        }
-
-        // Sync Users to SQLite DB
-        for(const u of localUsers){
-          if (!u.email) continue;
-          try {
-            await fetch('http://127.0.0.1:5000/api/register', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ name: u.name || 'Traveler', email: u.email, password: u.password || 'Password@123' })
-            });
-          } catch(e){}
-        }
-
-        // Sync Bookings to SQLite DB
-        const localBookings = JSON.parse(localStorage.getItem('travelnova_bookings_db')) || [];
-        for(const b of localBookings){
-          if (!b.booking_ref) continue;
-          try {
-            await fetch('http://127.0.0.1:5000/api/book-trip', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(b)
-            });
-          } catch(e){}
-        }
-      } catch(err){}
-    }
-
-    async function loadAdminData(){
-      // Sync local offline accounts to sqlite database first
-      await syncOfflineData();
-      try {
-        const r = await fetch('http://127.0.0.1:5000/api/admin/all-data');
-        const data = await r.json();
-        rawAdminData = data;
-        renderAdminUI(data);
-      } catch(e) {
-        // Fallback to local storage data if backend is offline
-        const localUsers = JSON.parse(localStorage.getItem('travelnova_users_db')) || [];
-        const localBookings = JSON.parse(localStorage.getItem('travelnova_bookings_db')) || [];
-        const localTrips = JSON.parse(localStorage.getItem('sv2')) || [];
-        
-        rawAdminData = {
-          summary: {
-            total_users: localUsers.length,
-            total_bookings: localBookings.length,
-            total_revenue: localBookings.reduce((sum, b) => sum + (parseFloat(b.total_amount) || 0), 0)
-          },
-          users: localUsers,
-          bookings: localBookings
-        };
-        renderAdminUI(rawAdminData);
-      }
-    }
-
-    function renderAdminUI(data){
-      const s = data.summary || {};
-      document.getElementById('statUsers').innerText = s.total_users || 0;
-      
-      document.getElementById('statBookings').innerText = s.total_bookings || 0;
-      document.getElementById('statRevenue').innerText = `₹${(s.total_revenue || 0).toLocaleString()}`;
-
-      // Render Bookings
-      const bTbl = document.getElementById('tblBookings');
-      document.getElementById('countBookings').innerText = `${data.bookings.length} records`;
-      if(!data.bookings.length){
-        bTbl.innerHTML = '<tr><td colspan="9" class="p-6 text-center text-slate-500">No trip bookings found yet.</td></tr>';
-      } else {
-        bTbl.innerHTML = data.bookings.map(b => `
-          <tr class="hover:bg-slate-800/40">
-            <td class="p-3 font-mono font-bold text-emerald-400">${b.booking_ref || 'TN-BOOK'}</td>
-            <td class="p-3 font-bold text-white">${b.user_name || 'Traveler'}</td>
-            <td class="p-3 text-slate-400">${b.user_email}</td>
-            <td class="p-3 text-slate-400">${b.user_phone || 'N/A'}</td>
-            <td class="p-3 font-extrabold text-blue-300">${b.destination}</td>
-            <td class="p-3">${b.days} Days</td>
-            <td class="p-3 text-right font-black text-amber-400">₹${b.total_amount}</td>
-            <td class="p-3"><span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 text-[10px] font-bold">${b.payment_method || 'UPI/Card'}</span></td>
-            <td class="p-3 text-slate-500">${b.booked_at || 'Just now'}</td>
-          </tr>
-        `).join('');
-      }
-
-      // Render Users
-      const uTbl = document.getElementById('tblUsers');
-      document.getElementById('countUsers').innerText = `${data.users.length} records`;
-      if(!data.users.length){
-        uTbl.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-slate-500">No registered users found.</td></tr>';
-      } else {
-        uTbl.innerHTML = data.users.map(u => `
-          <tr class="hover:bg-slate-800/40">
-            <td class="p-3 font-mono font-bold text-slate-400">#${u.id}</td>
-            <td class="p-3 font-bold text-white">${u.name}</td>
-            <td class="p-3 text-blue-300">${u.email}</td>
-            <td class="p-3 text-slate-500">${u.created_at || 'Recently'}</td>
-          </tr>
-        `).join('');
-      }
-
-
-    }
-
-    function filterTables(){
-      const q = document.getElementById('dbSearch').value.toLowerCase().trim();
-      if(!q){
-        renderAdminUI(rawAdminData);
-        return;
-      }
-      const filtered = {
-        summary: rawAdminData.summary,
-        users: rawAdminData.users.filter(u => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)),
-        
-        bookings: rawAdminData.bookings.filter(b => b.destination.toLowerCase().includes(q) || b.user_name.toLowerCase().includes(q) || b.user_email.toLowerCase().includes(q) || (b.booking_ref && b.booking_ref.toLowerCase().includes(q)))
-      };
-      renderAdminUI(filtered);
-    }
-
-    async function resetDbTable(tableName){
-      if(!confirm(`⚠️ Are you sure you want to clear/reset all records in the "${tableName}" database table? This action CANNOT be undone.`)){
-        return;
-      }
-      try {
-        const response = await fetch('http://127.0.0.1:5000/api/admin/reset-table', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ table: tableName })
-        });
-        const resData = await response.json();
-        alert(resData.message || `Table ${tableName} reset successfully!`);
-      } catch(e) {
-        // Local fallback
-        if(tableName === 'users'){
-          localStorage.removeItem('travelnova_users_db');
-        } else if(tableName === 'bookings'){
-          localStorage.removeItem('travelnova_bookings_db');
-        } else if(tableName === 'trips'){
-          localStorage.removeItem('sv2');
-        }
-        alert(`Offline Fallback: Cleared "${tableName}" from local storage successfully!`);
-      }
-      loadAdminData();
-    }
-
-    document.addEventListener('DOMContentLoaded', loadAdminData);
-  </script>
+  <script src="js/admin.js"></script>
 </body>
 </html>

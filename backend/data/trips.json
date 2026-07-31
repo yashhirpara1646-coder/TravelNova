@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "user_id": 1,
+    "user_email": "test@example.com",
+    "destination": "Jaipur, Rajasthan",
+    "days": 3,
+    "budget": 12000.0,
+    "interests": "Heritage & Forts",
+    "created_at": "2026-07-30 13:44:46"
+  },
+  {
+    "id": 2,
+    "user_id": 2,
+    "user_email": "aarav.sharma@travelnova.com",
+    "destination": "Bali, Indonesia",
+    "days": 7,
+    "budget": 65000.0,
+    "interests": "Beaches, Temples & Wellness",
+    "created_at": "2026-07-30 14:20:15"
+  },
+  {
+    "id": 3,
+    "user_id": 3,
+    "user_email": "sophia.chen@worldexplore.io",
+    "destination": "Tokyo, Japan",
+    "days": 5,
+    "budget": 140000.0,
+    "interests": "Anime, Food, Tech & Shrines",
+    "created_at": "2026-07-30 15:40:00"
+  },
+  {
+    "id": 4,
+    "user_id": 4,
+    "user_email": "liam.m@adventureseeker.com",
+    "destination": "Swiss Alps, Switzerland",
+    "days": 6,
+    "budget": 220000.0,
+    "interests": "Hiking, Skiing & Scenic Trains",
+    "created_at": "2026-07-30 16:50:12"
+  },
+  {
+    "id": 6,
+    "user_id": 6,
+    "user_email": "elena.r@globetrotter.org",
+    "destination": "Paris, France",
+    "days": 5,
+    "budget": 185000.0,
+    "interests": "Art, Museums, Gastronomy & Fashion",
+    "created_at": "2026-07-30 18:12:00"
+  },
+  {
+    "id": 7,
+    "user_id": 2,
+    "user_email": "aarav.sharma@travelnova.com",
+    "destination": "Dubai, UAE",
+    "days": 4,
+    "budget": 85000.0,
+    "interests": "Luxury Shopping, Desert Safari & Skyscrapers",
+    "created_at": "2026-07-30 18:35:10"
+  },
+  {
+    "id": 8,
+    "user_id": 3,
+    "user_email": "sophia.chen@worldexplore.io",
+    "destination": "Rome, Italy",
+    "days": 6,
+    "budget": 130000.0,
+    "interests": "Ancient Architecture & Culinary Tour",
+    "created_at": "2026-07-30 19:00:25"
+  }
+]
