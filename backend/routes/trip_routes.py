@@ -1,6 +1,6 @@
 import os
 from flask import Blueprint, request, jsonify
-from backend.json_db import db
+from backend.mongo_db import db
 
 trip_bp = Blueprint('trip', __name__)
 

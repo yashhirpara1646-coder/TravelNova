@@ -11,7 +11,7 @@ env_file_path = os.path.join(PROJECT_ROOT, '.env')
 if not os.path.exists(env_file_path):
     env_file_path = os.path.join(BACKEND_DIR, '.env')
 
-load_dotenv(dotenv_path=env_file_path)
+load_dotenv(dotenv_path=env_file_path, override=True)
 
 # Ensure Data Directory exists
 os.makedirs(DATA_DIR, exist_ok=True)
@@ -25,6 +25,10 @@ BOOKINGS_FILE = os.path.join(DATA_DIR, 'bookings.json')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '').strip()
 OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY', '').strip()
 GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', '').strip()
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'TravelNovaAdmin123!').strip()
+
+# Database Config
+MONGODB_URI = os.getenv('MONGODB_URI', '').strip()
 
 # Server Config
 HOST = os.getenv('HOST', '0.0.0.0')

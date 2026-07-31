@@ -126,6 +126,7 @@ function signOutUser() {
 
 // ========== INITIALIZATION ==========
 document.addEventListener('DOMContentLoaded', () => {
+  history.replaceState({ id: 'home' }, '', '#home');
   initAuthUI();
   initDateLimits();
   renderFP();
@@ -242,8 +243,19 @@ function toggleInterest(t) {
   renderInterests();
 }
 
+// Handle browser back/forward buttons
+window.addEventListener('popstate', (event) => {
+  if (event.state && event.state.id) {
+    showS(event.state.id, false);
+  } else {
+    showS('home', false);
+  }
+});
+
 function showS(id, push = true) {
-  if (push && as !== id) hs.push(as);
+  if (push && as !== id) {
+    history.pushState({ id: id }, '', `#${id}`);
+  }
   document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
   const section = document.getElementById('view-' + id);
   if (section) section.classList.remove('hidden');
@@ -254,8 +266,8 @@ function showS(id, push = true) {
 }
 
 function goBack() {
-  if (hs.length > 0) {
-    showS(hs.pop(), false);
+  if (history.state && history.state.id !== 'home') {
+    history.back();
   } else {
     showS('home', false);
   }
@@ -293,12 +305,6 @@ async function startQS() {
   const destInput = document.getElementById('fDest');
   if (destInput) destInput.value = fc(q);
   showS('planner');
-  
-  // Auto-fetch data if real world city
-  setTimeout(() => {
-    const subBtn = document.getElementById('subBtn');
-    if (subBtn) subBtn.click();
-  }, 300);
 }
 
 const CURRENCY_MAP = {
@@ -1133,7 +1139,7 @@ async function renderMap(city, itineraryData) {
         <p class="text-[11px] text-slate-500">${dp.mo.desc || ''}</p>
       </div>
     `);
-    markersToFetch.push({ marker: moMarker, query: `${dp.mo.place}, ${city}`, defaultPos: moPos });
+    markersToFetch.push({ marker: moMarker, query: `${dp.mo.place}, ${city}`, fallbackQuery: `${dp.mo.place}, ${dp.mo.area}`, defaultPos: moPos });
 
     // 2. Afternoon spot
     const afPos = getInitialOffset(idx, 1.6);
@@ -1146,7 +1152,7 @@ async function renderMap(city, itineraryData) {
         <p class="text-[11px] text-slate-500">${dp.af.desc || ''}</p>
       </div>
     `);
-    markersToFetch.push({ marker: afMarker, query: `${dp.af.place}, ${city}`, defaultPos: afPos });
+    markersToFetch.push({ marker: afMarker, query: `${dp.af.place}, ${city}`, fallbackQuery: `${dp.af.place}, ${dp.af.area}`, defaultPos: afPos });
 
     // 3. Hotel spot
     const hoPos = getInitialOffset(idx, 2.8);
@@ -1156,7 +1162,7 @@ async function renderMap(city, itineraryData) {
         <p class="font-extrabold text-sm">${dp.hotel}</p>
       </div>
     `);
-    markersToFetch.push({ marker: hoMarker, query: `${dp.hotel}, ${city}`, defaultPos: hoPos });
+    markersToFetch.push({ marker: hoMarker, query: `${dp.hotel}, ${city}`, fallbackQuery: dp.hotel, defaultPos: hoPos });
   });
 
   // Connect morning & afternoon spots with polyline
@@ -1173,8 +1179,12 @@ async function renderMap(city, itineraryData) {
     for (let i = 0; i < markersToFetch.length; i++) {
       const item = markersToFetch[i];
       try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(item.query)}`);
-        const data = await res.json();
+        let res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(item.query)}`);
+        let data = await res.json();
+        if (!data || data.length === 0) {
+          res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(item.fallbackQuery)}`);
+          data = await res.json();
+        }
         if (data && data.length > 0) {
           const realPos = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
           item.marker.setLatLng(realPos);
@@ -1420,13 +1430,13 @@ function confirmBooking(e) {
   if (congModal) congModal.classList.remove('hidden');
 
   showToast(`🎉 Congratulations! Trip Booked (Ref: ${refId})`, 'info');
-  downloadBookingInvoicePDF();
 }
 
 function closeCongModal() {
   const cEl = document.getElementById('congratulationsModal');
   if (cEl) cEl.classList.add('hidden');
 }
+window.closeCongModal = closeCongModal;
 
 // Payment UI handler
 function handlePaymentMethodChange() {
@@ -1570,29 +1580,32 @@ function downloadBookingInvoicePDF() {
 </body>
 </html>`;
 
-  let printIframe = document.getElementById('travelnova_print_frame');
-  if (!printIframe) {
-    printIframe = document.createElement('iframe');
-    printIframe.id = 'travelnova_print_frame';
-    printIframe.style.position = 'fixed';
-    printIframe.style.right = '0';
-    printIframe.style.bottom = '0';
-    printIframe.style.width = '0';
-    printIframe.style.height = '0';
-    printIframe.style.border = '0';
-    document.body.appendChild(printIframe);
+  try {
+    let printIframe = document.getElementById('travelnova_print_frame');
+    if (!printIframe) {
+      printIframe = document.createElement('iframe');
+      printIframe.id = 'travelnova_print_frame';
+      printIframe.style.position = 'fixed';
+      printIframe.style.right = '0';
+      printIframe.style.bottom = '0';
+      printIframe.style.width = '0';
+      printIframe.style.height = '0';
+      printIframe.style.border = '0';
+      document.body.appendChild(printIframe);
+    }
+    const doc = printIframe.contentWindow.document;
+    doc.open();
+    doc.write(invoiceHtml);
+    doc.close();
+    setTimeout(() => {
+      printIframe.contentWindow.focus();
+      printIframe.contentWindow.print();
+    }, 200);
+  } catch (err) {
+    console.error('Invoice print error:', err);
   }
-
-  const doc = printIframe.contentWindow.document;
-  doc.open();
-  doc.write(invoiceHtml);
-  doc.close();
-
-  setTimeout(() => {
-    printIframe.contentWindow.focus();
-    printIframe.contentWindow.print();
-  }, 50);
 }
+window.downloadBookingInvoicePDF = downloadBookingInvoicePDF;
 
 // ========== CHATBOT ASSISTANT LOGIC ==========
 function askBot(query) {

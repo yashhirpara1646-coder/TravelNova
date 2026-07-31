@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from backend.json_db import db
+from backend.mongo_db import db
 from backend.validators import validate_email, validate_password
 
 auth_bp = Blueprint('auth', __name__)

@@ -25,14 +25,14 @@ def handle_options():
     if request.method == 'OPTIONS':
         response = app.make_default_options_response()
         response.headers['Access-Control-Allow-Origin'] = '*'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization,Admin-Key,admin-key'
         response.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE,OPTIONS'
         return response, 200
 
 @app.after_request
 def after_request(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization,Admin-Key,admin-key'
     response.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE,OPTIONS'
     return response
 
@@ -45,11 +45,11 @@ def home():
 @app.route('/api')
 def api_info():
     return jsonify({
-        'name': 'TravelNova AI Backend API (Gemini 2.5 Flash)',
+        'name': 'TravelNova AI Backend API (Groq Llama 3)',
         'status': 'Online',
-        'version': '4.5.0',
+        'version': '4.6.0',
         'models': {
-            'ai_engine': 'Gemini 2.5 Flash (gemini-2.5-flash)',
+            'ai_engine': 'Google Gemini (gemini-2.5-flash)',
             'weather_api': 'OpenWeather API',
             'maps_api': 'Google Maps JS API',
             'directions_api': 'Google Directions API',
@@ -63,7 +63,7 @@ def health():
         'status': 'ok',
         'backend': 'Python Flask (Modular AI)',
         'model': 'gemini-2.5-flash',
-        'database': 'JSON File Store',
+        'database': 'MongoDB',
         'port': PORT
     })
 
@@ -80,5 +80,5 @@ def serve_static(path):
     return send_from_directory(frontend_dir, 'index.html')
 
 if __name__ == '__main__':
-    print(f'[SERVER] TravelNova Modular Backend & Gemini 2.5 Flash API running on http://127.0.0.1:{PORT}')
+    print(f"[SERVER] TravelNova Modular Backend & Gemini AI running on http://{HOST}:{PORT}")
     app.run(host=HOST, port=PORT, debug=DEBUG)
