@@ -1,7 +1,11 @@
 import os
 from datetime import datetime
-from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure
+try:
+    from pymongo import MongoClient
+    from pymongo.errors import ConnectionFailure
+except ImportError:
+    MongoClient = None
+
 from backend.config import MONGODB_URI
 
 class MongoDBManager:
@@ -13,6 +17,10 @@ class MongoDBManager:
         self._connect()
 
     def _connect(self):
+        if MongoClient is None:
+            print("[Warning] pymongo package is not installed. Database operations will fail.")
+            return
+
         if not MONGODB_URI or "<username>" in MONGODB_URI:
             print("[Warning] MONGODB_URI is not set or contains placeholders. Database operations will fail.")
             return
