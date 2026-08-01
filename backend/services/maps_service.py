@@ -403,28 +403,33 @@ All names must be real places findable on Google Maps. Include real locality/are
             'places': fallback
         }
 
-    def _fetch_attractions_50_90km(self, destination):
+    def _fetch_attractions_50_90km(self, destination, days=3):
         """
         Fetches tourist attractions for a destination:
         1. Queries 50km radius first.
         2. If fewer than 10 places found, expands search to 90km radius.
-        3. Fallback to direct city query.
+        3. For 12+ day trips, expands to 100km radius to find more spots.
+        4. Fallback to direct city query.
         """
         # 1. Try 50km radius
         q_50km = f"top tourist attractions and sightseeing places near {destination} within 50km"
         places_50km = self._query_places(q_50km, max_results=40)
-        if len(places_50km) >= 10:
+        
+        # Determine radius based on days
+        max_radius = "100km" if int(days) >= 12 else "90km"
+        
+        if len(places_50km) >= 15 and int(days) < 12:
             return places_50km
 
-        # 2. Try 90km radius
-        q_90km = f"top tourist attractions and sightseeing places near {destination} within 90km"
-        places_90km = self._query_places(q_90km, max_results=40)
-        if len(places_90km) > len(places_50km):
-            return places_90km
+        # 2. Try extended radius (90km or 100km)
+        q_extended = f"top tourist attractions and sightseeing places near {destination} within {max_radius}"
+        places_extended = self._query_places(q_extended, max_results=50 if int(days) >= 12 else 40)
+        if len(places_extended) > len(places_50km):
+            return places_extended
 
         # 3. Direct city query
         q_direct = f"top tourist attractions in {destination}"
-        places_direct = self._query_places(q_direct, max_results=40)
+        places_direct = self._query_places(q_direct, max_results=50 if int(days) >= 12 else 40)
         return places_direct if places_direct else places_50km
 
     # --- GENERAL CITY DATA (PLACES, HOTELS, FOOD) ---
@@ -439,7 +444,7 @@ All names must be real places findable on Google Maps. Include real locality/are
 
         # Step 1: Try Google Places API in parallel
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-            future_p = executor.submit(self._fetch_attractions_50_90km, destination)
+            future_p = executor.submit(self._fetch_attractions_50_90km, destination, int(days))
             future_h = executor.submit(self._query_places, f"best hotels in {destination}", 20)
             future_f = executor.submit(self._query_places, f"best restaurants in {destination}", 25)
 

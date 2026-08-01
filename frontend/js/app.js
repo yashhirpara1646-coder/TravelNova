@@ -338,19 +338,28 @@ function updateBudgetRanges() {
   const minLux = cData.baseDayLux * days;
 
   const options = [
-    { label: `Economy (${fmt(minLow)} - ${fmt(minMid)})`, min: minLow, max: minMid, midVal: Math.round((minLow + minMid)/2), isLow: true },
-    { label: `Standard (${fmt(minMid)} - ${fmt(minMax)})`, min: minMid, max: minMax, midVal: Math.round((minMid + minMax)/2), isLow: false },
-    { label: `Premium (${fmt(minMax)} - ${fmt(minLux)})`, min: minMax, max: minLux, midVal: Math.round((minMax + minLux)/2), isLow: false },
-    { label: `Luxury (${fmt(minLux)}+)`, min: minLux, max: minLux * 2, midVal: Math.round(minLux * 1.5), isLow: false }
+    { label: `Economy (${fmt(minLow)} - ${fmt(minMid)})`, min: minLow, max: minMid, midVal: Math.round((minLow + minMid)/2), tier: 0 },
+    { label: `Standard (${fmt(minMid)} - ${fmt(minMax)})`, min: minMid, max: minMax, midVal: Math.round((minMid + minMax)/2), tier: 1 },
+    { label: `Premium (${fmt(minMax)} - ${fmt(minLux)})`, min: minMax, max: minLux, midVal: Math.round((minMax + minLux)/2), tier: 2 },
+    { label: `Luxury (${fmt(minLux)}+)`, min: minLux, max: minLux * 2, midVal: Math.round(minLux * 1.5), tier: 3 }
   ];
 
-  // Deactivate lowest tier for trips of 7 days or more
-  const deactivateLow = days >= 7;
+  let minAllowedTier = 0;
+  let recommendedOptionText = "";
+  
+  if (days >= 14) {
+    minAllowedTier = 2; // Premium minimum
+    recommendedOptionText = `Minimum recommended budget range is <strong>${fmt(minMax)} - ${fmt(minLux)}</strong>.`;
+  } else if (days >= 7) {
+    minAllowedTier = 1; // Standard minimum
+    recommendedOptionText = `Minimum recommended budget range is <strong>${fmt(minMid)} - ${fmt(minMax)}</strong>.`;
+  }
 
-  selRange.innerHTML = options.map((opt, idx) => {
-    const disabled = (deactivateLow && opt.isLow) ? 'disabled' : '';
-    const labelText = (deactivateLow && opt.isLow) ? `${opt.label} 🚫 (Too low for ${days} days)` : opt.label;
-    const selected = (idx === 1 || (!deactivateLow && idx === 0)) ? 'selected' : '';
+  selRange.innerHTML = options.map((opt) => {
+    const disabled = (opt.tier < minAllowedTier) ? 'disabled' : '';
+    const labelText = (opt.tier < minAllowedTier) ? `${opt.label} 🚫 (Too low for ${days} days)` : opt.label;
+    // Auto select the minimum allowed tier if possible, else standard fallback
+    const selected = (opt.tier === (minAllowedTier > 0 ? minAllowedTier : 1)) ? 'selected' : '';
     return `<option value="${opt.midVal}" data-label="${opt.label}" ${disabled} ${selected}>${labelText}</option>`;
   }).join('');
 
@@ -358,7 +367,7 @@ function updateBudgetRanges() {
 
   if (noticeEl) {
     if (days >= 7) {
-      noticeEl.innerHTML = `💡 <strong>${days}-Day Trip Recommended Budget:</strong> For a ${days}-day itinerary, low budget options are deactivated. Minimum recommended budget range is <strong>${fmt(minMid)} - ${fmt(minMax)}</strong>.`;
+      noticeEl.innerHTML = `💡 <strong>${days}-Day Trip Recommended Budget:</strong> For a ${days}-day itinerary, low budget options are deactivated. ${recommendedOptionText}`;
       noticeEl.classList.remove('hidden');
     } else {
       noticeEl.classList.add('hidden');
