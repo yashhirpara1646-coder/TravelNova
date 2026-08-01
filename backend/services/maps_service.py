@@ -406,31 +406,35 @@ All names must be real places findable on Google Maps. Include real locality/are
     def _fetch_attractions_50_90km(self, destination, days=3):
         """
         Fetches tourist attractions for a destination:
-        1. Queries 50km radius first.
-        2. If fewer than 10 places found, expands search to 90km radius.
-        3. For 12+ day trips, expands to 150km radius to find more spots.
-        4. Fallback to direct city query.
+        1. Queries multiple radii and topics to aggregate unique places.
+        2. If 12+ day trip, includes 150km radius search.
+        3. Guarantees a large pool of real places (up to 40+).
         """
-        # 1. Try 50km radius
-        q_50km = f"top tourist attractions and sightseeing places near {destination} within 50km"
-        places_50km = self._query_places(q_50km, max_results=40)
-        
-        # Determine radius based on days
         max_radius = "150km" if int(days) >= 12 else "90km"
         
-        if len(places_50km) >= 15 and int(days) < 12:
-            return places_50km
-
-        # 2. Try extended radius (90km or 100km)
-        q_extended = f"top tourist attractions and sightseeing places near {destination} within {max_radius}"
-        places_extended = self._query_places(q_extended, max_results=50 if int(days) >= 12 else 40)
-        if len(places_extended) > len(places_50km):
-            return places_extended
-
-        # 3. Direct city query
-        q_direct = f"top tourist attractions in {destination}"
-        places_direct = self._query_places(q_direct, max_results=50 if int(days) >= 12 else 40)
-        return places_direct if places_direct else places_50km
+        all_places = []
+        seen_names = set()
+        
+        queries = [
+            f"top tourist attractions in {destination}",
+            f"sightseeing places near {destination} within 50km",
+            f"best places to visit near {destination} within {max_radius}",
+            f"historical sites, museums and nature parks in {destination}"
+        ]
+        
+        for q in queries:
+            places = self._query_places(q, max_results=20)
+            for p in places:
+                name = p.get('name') if isinstance(p, dict) else str(p)
+                if name and name not in seen_names:
+                    seen_names.add(name)
+                    all_places.append(p)
+            
+            # If we have enough places (36 needed for 18 days), we can stop querying
+            if len(all_places) >= 40:
+                break
+                
+        return all_places
 
     # --- GENERAL CITY DATA (PLACES, HOTELS, FOOD) ---
     def get_city_data(self, destination, days=20):
