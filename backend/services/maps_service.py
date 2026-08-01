@@ -408,7 +408,7 @@ All names must be real places findable on Google Maps. Include real locality/are
         Fetches tourist attractions for a destination:
         1. Queries 50km radius first.
         2. If fewer than 10 places found, expands search to 90km radius.
-        3. For 12+ day trips, expands to 100km radius to find more spots.
+        3. For 12+ day trips, expands to 150km radius to find more spots.
         4. Fallback to direct city query.
         """
         # 1. Try 50km radius
@@ -416,7 +416,7 @@ All names must be real places findable on Google Maps. Include real locality/are
         places_50km = self._query_places(q_50km, max_results=40)
         
         # Determine radius based on days
-        max_radius = "100km" if int(days) >= 12 else "90km"
+        max_radius = "150km" if int(days) >= 12 else "90km"
         
         if len(places_50km) >= 15 and int(days) < 12:
             return places_50km
