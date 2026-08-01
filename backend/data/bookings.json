@@ -1610,5 +1610,57 @@
     "total_amount": 10000.0,
     "payment_method": "UPI / QR Payment",
     "booked_at": "2026-07-31 11:53:06"
+  },
+  {
+    "id": 125,
+    "booking_ref": "TN-RHL-0801",
+    "user_id": 10,
+    "user_name": "Rahul Patel",
+    "user_email": "rahul.p@gmail.com",
+    "user_phone": "9876543210",
+    "destination": "Goa, India",
+    "days": 5,
+    "total_amount": 42000.0,
+    "payment_method": "Credit Card",
+    "booked_at": "2026-08-01 10:45:00"
+  },
+  {
+    "id": 126,
+    "booking_ref": "TN-SNH-0801",
+    "user_id": 11,
+    "user_name": "Sneha Desai",
+    "user_email": "sneha.desai@yahoo.com",
+    "user_phone": "9876543211",
+    "destination": "Paris, France",
+    "days": 7,
+    "total_amount": 145000.0,
+    "payment_method": "UPI",
+    "booked_at": "2026-08-01 12:10:00"
+  },
+  {
+    "id": 127,
+    "booking_ref": "TN-VKR-0801",
+    "user_id": 12,
+    "user_name": "Vikram Singh",
+    "user_email": "vikram.singh99@outlook.com",
+    "user_phone": "9876543212",
+    "destination": "Kyoto, Japan",
+    "days": 10,
+    "total_amount": 195000.0,
+    "payment_method": "Net Banking",
+    "booked_at": "2026-08-01 13:30:00"
+  },
+  {
+    "id": 128,
+    "booking_ref": "TN-PRY-0801",
+    "user_id": 13,
+    "user_name": "Priya Mehta",
+    "user_email": "priya.mehta@hotmail.com",
+    "user_phone": "9876543213",
+    "destination": "Manali, India",
+    "days": 4,
+    "total_amount": 32000.0,
+    "payment_method": "Credit Card",
+    "booked_at": "2026-08-01 14:40:00"
   }
 ]

@@ -54,5 +54,33 @@
     "email": "yash1234@gmail.com",
     "password": "Yash@5381",
     "created_at": "2026-07-31 09:38:14"
+  },
+  {
+    "id": 10,
+    "name": "Rahul Patel",
+    "email": "rahul.p@gmail.com",
+    "password": "Password@123",
+    "created_at": "2026-08-01 10:15:00"
+  },
+  {
+    "id": 11,
+    "name": "Sneha Desai",
+    "email": "sneha.desai@yahoo.com",
+    "password": "Password@123",
+    "created_at": "2026-08-01 11:20:30"
+  },
+  {
+    "id": 12,
+    "name": "Vikram Singh",
+    "email": "vikram.singh99@outlook.com",
+    "password": "Password@123",
+    "created_at": "2026-08-01 12:45:10"
+  },
+  {
+    "id": 13,
+    "name": "Priya Mehta",
+    "email": "priya.mehta@hotmail.com",
+    "password": "Password@123",
+    "created_at": "2026-08-01 14:05:05"
   }
 ]

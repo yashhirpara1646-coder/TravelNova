@@ -68,5 +68,45 @@
     "budget": 130000.0,
     "interests": "Ancient Architecture & Culinary Tour",
     "created_at": "2026-07-30 19:00:25"
+  },
+  {
+    "id": 9,
+    "user_id": 10,
+    "user_email": "rahul.p@gmail.com",
+    "destination": "Goa, India",
+    "days": 5,
+    "budget": 45000.0,
+    "interests": "Beaches & Nightlife",
+    "created_at": "2026-08-01 10:25:00"
+  },
+  {
+    "id": 10,
+    "user_id": 11,
+    "user_email": "sneha.desai@yahoo.com",
+    "destination": "Paris, France",
+    "days": 7,
+    "budget": 150000.0,
+    "interests": "Art & Culture",
+    "created_at": "2026-08-01 11:35:00"
+  },
+  {
+    "id": 11,
+    "user_id": 12,
+    "user_email": "vikram.singh99@outlook.com",
+    "destination": "Kyoto, Japan",
+    "days": 10,
+    "budget": 200000.0,
+    "interests": "Temples & Nature",
+    "created_at": "2026-08-01 13:00:00"
+  },
+  {
+    "id": 12,
+    "user_id": 13,
+    "user_email": "priya.mehta@hotmail.com",
+    "destination": "Manali, India",
+    "days": 4,
+    "budget": 35000.0,
+    "interests": "Mountains & Snow",
+    "created_at": "2026-08-01 14:15:00"
   }
 ]
