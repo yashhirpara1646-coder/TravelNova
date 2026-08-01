@@ -829,27 +829,21 @@ function getUniquePlaceForDay(P, index, city) {
   if (P && P.length > index) {
     return P[index];
   }
-  const placeTypes = [
-    { type: 'Viewpoint & Hillside Park', nameSuffix: 'Panoramic Overlook' },
-    { type: 'Heritage Shrine & Temple', nameSuffix: 'Spiritual Complex' },
-    { type: 'Botanical Reserve & Gardens', nameSuffix: 'Nature Trails' },
-    { type: 'Waterfront Promenade & Lake', nameSuffix: 'Lakeside' },
-    { type: 'Historic Palace & Museum', nameSuffix: 'Heritage Hall' },
-    { type: 'Eco Tourism Reserve', nameSuffix: 'Valley Spot' },
-    { type: 'Sunset Point & Observation Deck', nameSuffix: 'Sunset Ridge' },
-    { type: 'Central Heritage Square', nameSuffix: 'Clock Tower Plaza' },
-    { type: 'Architectural Monument', nameSuffix: 'Memorial' },
-    { type: 'Riverside Walkway', nameSuffix: 'River View' }
-  ];
-  const offset = P ? (index - P.length) : index;
-  const t = placeTypes[offset % placeTypes.length];
-  const zoneNum = Math.floor(offset / placeTypes.length) + 1;
-  const suffix = zoneNum > 1 ? ` (Zone ${zoneNum})` : '';
-
+  
+  // Advanced Dynamic Unique Place Generator
+  const adjectives = ['Historic', 'Royal', 'Scenic', 'Golden', 'Grand', 'Hidden', 'Ancient', 'Majestic', 'Serene', 'Central', 'Vibrant', 'Cultural', 'Iconic', 'Popular', 'Beautiful', 'Famous', 'Tranquil', 'Urban', 'Local', 'Modern'];
+  const types = ['Museum', 'Palace', 'Gardens', 'Market', 'Square', 'Lake', 'Viewpoint', 'Temple', 'Promenade', 'Art Gallery', 'Sanctuary', 'Fort', 'Heritage Site', 'Bazaar', 'Avenue', 'Monument', 'Riverfront', 'Park', 'Plaza', 'Reserve'];
+  const zones = ['North', 'South', 'East', 'West', 'Central', 'Old City', 'Downtown', 'Uptown', 'Suburban', 'Hillside'];
+  
+  // Use index to deterministically but uniquely select words to avoid duplicates
+  const adj = adjectives[(index * 7) % adjectives.length];
+  const type = types[(index * 3) % types.length];
+  const zone = zones[(index * 5) % zones.length];
+  
   return {
-    name: `${city} ${t.nameSuffix}${suffix}`,
-    address: `${city} Central Area, ${city}`,
-    rating: (4.5 + (offset % 4) * 0.1).toFixed(1)
+    name: `${city} ${adj} ${type}`,
+    address: `${zone} District, ${city}`,
+    rating: (4.1 + (index % 8) * 0.1).toFixed(1)
   };
 }
 
