@@ -21,6 +21,21 @@ def generate_ai_plan():
     hotel_pref = data.get('hotel_pref', 'Standard').strip()
     transport_pref = data.get('transport_pref', 'Any').strip()
 
+    # Verify city exists using Nominatim API
+    try:
+        import urllib.request
+        import urllib.parse
+        url = f"https://nominatim.openstreetmap.org/search?format=json&limit=1&q={urllib.parse.quote(destination)}"
+        req = urllib.request.Request(url, headers={'User-Agent': 'TravelNova/1.0'})
+        with urllib.request.urlopen(req, timeout=5) as response:
+            if response.status == 200:
+                import json
+                nom_data = json.loads(response.read().decode('utf-8'))
+                if not nom_data:
+                    return jsonify({'success': False, 'message': 'Sorry, the city was not found. Please enter a valid real city name.'}), 400
+    except Exception as e:
+        pass # Fallback to continue if API fails
+
     plan = ai_service.generate_travel_plan(
         destination=destination,
         days=days,

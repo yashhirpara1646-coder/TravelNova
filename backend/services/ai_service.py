@@ -41,7 +41,11 @@ Act as a world-class AI travel consultant. Generate a complete travel itinerary 
 - Interests: {interests}
 - Dietary Preferences: {dietary_pref}
 
-You MUST return ONLY a valid JSON object without markdown fences containing the following structure:
+CRITICAL RULES:
+1. NO DUPLICATES: The itinerary MUST be 100% unique for every single day up to 18 days. Do NOT repeat any attractions, restaurants, or locations. If running out of major spots, add realistic day trips to nearby towns, cultural workshops, or relaxing local experiences. NEVER loop or duplicate data.
+2. SPEED & CONCISENESS: Keep all text descriptions extremely brief and concise. Avoid long paragraphs. This ensures the API responds quickly.
+3. FORMAT: You MUST return ONLY a valid JSON object without markdown fences containing the following structure:
+
 {{
   "destination": "{destination}",
   "days": {days},
